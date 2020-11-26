@@ -31,6 +31,7 @@ async def role(ctx):
 async def stat(ctx, order_id):
 	if int(ctx.channel.id) not in channels_id:
 		order = get_order_id(order_id)
+		print(order)
 		if order['step'] == 9:
 			if order['customer_id'] == int(ctx.message.author.id):
 				list_roles = system.return_roles_cnt(order_id)
@@ -267,9 +268,13 @@ async def close(ctx, order_id):
 	if int(ctx.channel.id) not in channels_id:
 		order = get_order_id(order_id)
 		user_id = int(ctx.message.author.id)
-		if user_id == order['customer_id'] and order['step'] not in (9, 10, 12, 13):
+		if user_id == order['customer_id'] and order['step'] not in (10, 12, 13):
 			update("orders", "step", 11, int(order_id))
 			await ctx.send(f"Заказ №{order_id} закрыт.")
+			channel = bot.get_channel(751682915208790137)
+			print(order['message_order'])
+			pre_message = await channel.fetch_message(order['message_order'])
+			await pre_message.delete()
 		else:
 			await ctx.send(f"Заказ №{order_id} нельзя закрыть.")
 		
@@ -394,6 +399,8 @@ async def new_order(ctx, key=None, people=None, fraction='', role_1='', role_2='
 						embedVar_order.add_field(name="Дейсвия:", value="✅ - откликнуться", inline=True)
 						msg = await channel_orders.send(f"Заказ №{order['id']}", embed=embedVar_order)
 						await msg.add_reaction('✅')
+						print(int(msg.id))
+						update9('message_order', int(msg.id), user_id)
 						roles = {}
 						for r in list_roles:
 							role = {}
@@ -437,7 +444,7 @@ async def on_raw_reaction_add(payload):
 	user_name = bot.get_user(user_id)
 	channel_orders = bot.get_channel(751682915208790137)
 	emoji = payload.emoji.name
-	if user_id != 714618667605688350:
+	if user_id != 752972458541449266:
 		step_order = get_order(user_id)
 		try:
 			step = step_order['step']

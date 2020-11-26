@@ -283,3 +283,7 @@ def get_all_orders(user_id: int):
     cursor.execute(f"SELECT * FROM orders WHERE customer_id=={user_id}")
     rows = cursor.fetchall()
     return rows
+
+cursor.execute(f"SELECT * FROM orders")
+rows = cursor.fetchall()
+print(rows)
