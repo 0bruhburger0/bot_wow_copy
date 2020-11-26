@@ -377,7 +377,7 @@ async def new_order(ctx, key=None, people=None, fraction='', role_1='', role_2='
 				if (len(list_roles)) == int(people):
 					if link != '' and fraction != '':
 						update9("step", 8, user_id)
-						embedVar = discord.Embed(title=f"Создание заказа №{order2['id']}:", description='Заказ создан в комнате #заказы', color=000000)
+						embedVar = discord.Embed(title=f"Создание заказа №{order['id']}:", description='Заказ создан в комнате #заказы', color=000000)
 						embedVar.add_field(name="Ключ:", value=key, inline=True)
 						embedVar.add_field(name="Количество людей:", value=people, inline=True)
 						embedVar.add_field(name="Фракция:", value=fraction[1:], inline=True)
@@ -518,7 +518,7 @@ async def on_raw_reaction_add(payload):
 			await pre_message.delete()
 			order = get_order(user_id)
 			if order['key_name'] == 'Без ключа':
-				embedVar = discord.Embed(title=f"Создание заказа №{order2['id']}:", description=config.desc_1, color=000000)
+				embedVar = discord.Embed(title=f"Создание заказа №{order['id']}:", description=config.desc_1, color=000000)
 			else:
 				embedVar = discord.Embed(title=f"Создание заказа №{order['id']}:", description=config.desc_5, color=000000)
 			embedVar.add_field(name="Ключ:", value=order['lvl_key'], inline=True)
