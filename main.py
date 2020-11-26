@@ -990,7 +990,24 @@ async def wait_room(order_id):
 	maximum_heals = sorted(maximum_heals, key=itemgetter(1), reverse=True)
 
 	maximum = list(dict(maximum_heals[:1]).keys()) + list(dict(maximum_tanks[:1]).keys()) + list(dict(maximum_dds[:2]).keys())
-	separate_rating = (list(dict(maximum_heals[:1]).values())[0] + list(dict(maximum_tanks[:1]).keys())[0] + list(dict(maximum_dds[:2]).keys())[0] + list(dict(maximum_dds[:2]).keys())[1]) / 4
+	try:
+		sep_heals = list(dict(maximum_heals[:1]).values())[0]
+	except:
+		sep_heals = 0
+	try:
+		sep_tanks = list(dict(maximum_tanks[:1]).keys())[0]
+	except:
+		sep_tanks = 0
+	try:
+		sep_dds1 = list(dict(maximum_dds[:2]).keys())[0]
+	except:
+		sep_dds1 = 0
+	try:
+		sep_dds2 = list(dict(maximum_dds[:2]).keys())[1]
+	except:
+		sep_dds2 = 0
+	
+	separate_rating = (sep_heals + sep_tanks + sep_dds1 + sep_dds2) / 4
 
 	maximum2 = [(c, com_dict[c]) for c in com_dict]
 	maximum2 = sorted(maximum2, key=itemgetter(1), reverse=True)
