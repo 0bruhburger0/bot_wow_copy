@@ -1,4 +1,4 @@
-import discord, config, asyncio, system, math, qiwi
+import discord, config, asyncio, system, math, qiwi, random
 from discord.ext import commands
 from operator import itemgetter
 from db import history_customer, get_all_orders, history_executor, ended, update8, update9, not_conf, active_orders_customer, active_orders_executor, get_order_id, get_order, get_executor, get_customer, update, cerate_executor, create_order, cerate_customer
