@@ -134,7 +134,7 @@ def get_order(customer_id: int): # Достатет данные заказа п
         f"SELECT * FROM orders WHERE customer_id={customer_id} AND step<9")
     rows = cursor.fetchall()
     columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 'key_name', 'roles', 
-    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg']
+    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 'waiting_group']
     dict_row = {}
     for row in rows:
         for index, column in enumerate(columns):
@@ -147,7 +147,7 @@ def get_order_id(order_id: int): # Достает заказ по id заказ�
         f"SELECT * FROM orders WHERE id={order_id}")
     rows = cursor.fetchall()
     columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 'key_name', 'roles', 
-    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg']
+    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 'waiting_group']
     dict_row = {}
     for row in rows:
         for index, column in enumerate(columns):
