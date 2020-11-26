@@ -35,11 +35,11 @@ async def stat(ctx, order_id):
 			if order['customer_id'] == int(ctx.message.author.id):
 				list_roles = system.return_roles_cnt(order_id)
 				embedVar = discord.Embed(title=f"Статистика по ролям для заказа №{order_id}:", description=list_roles, color=000000)
-				ctx.send(embed=embedVar)
+				await ctx.send(embed=embedVar)
 			else:
-				ctx.send('Для тебя не доступна эта команда')
+				await ctx.send('Для тебя не доступна эта команда')
 		else:
-			ctx.send(f'Заказ №{order_id} уже собран или закончен.')
+			await ctx.send(f'Заказ №{order_id} уже собран или закончен.')
 
 
 @bot.command()
