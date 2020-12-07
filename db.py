@@ -1,7 +1,7 @@
 import sqlite3
 
 
-conn = sqlite3.connect("data_base2.db", check_same_thread=False)
+conn = sqlite3.connect("data_base1.db", check_same_thread=False)
 cursor = conn.cursor()
 
 
@@ -19,7 +19,8 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS executors(
                 wallet_address TEXT DEFAULT 'Не указано',
                 balance INTEGER DEFAULT 0,
                 score INTEGER DEFAULT 0,
-                cnt_orders INTEGER DEFAULT 0
+                cnt_orders INTEGER DEFAULT 0,
+                logs TEXT DEFAULT 'Не указано'
                 )""")
 
 
@@ -45,7 +46,14 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS orders(
                 waiting_heals TEXT,
                 waiting_dps TEXT,
                 group_reg TEXT,
-                waiting_group TEXT
+                waiting_group TEXT,
+                its_cust INTEGER DEFAULT 0,
+                info TEXT,
+                custom_tanks TEXT,
+                custom_heals TEXT,
+                custom_dps TEXT,
+                all_custom_executors TEXT,
+                message_stat INTEGER
                 )""")
 
 
@@ -64,6 +72,13 @@ def create_order(cusromer_id: int, lvl_key: str, cnt_executors: int): # Созд
     cursor.execute(
         "INSERT INTO orders (customer_id, lvl_key, cnt_executors) VALUES (?, ?, ?)", 
     (cusromer_id, lvl_key, cnt_executors))
+    conn.commit()
+
+
+def create_custom_order(cusromer_id: int, cnt_executors: str, link: str, price: int, comission: int, info: int, step: int): # Создание кастомного заказа в orders
+    cursor.execute(
+        "INSERT INTO orders (customer_id, cnt_executors, link, price, comission, step, its_cust, info) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+    (cusromer_id, cnt_executors, link, price, comission, step, 1, info))
     conn.commit()
 
 
@@ -121,7 +136,7 @@ def get_executor(primary_id: int): # Достатет данные исполн�
     cursor.execute(
         f"SELECT * FROM executors WHERE id={primary_id}")
     rows = cursor.fetchall()
-    columns = ['id', 'executor_name', 'wallet_address', 'balance', 'score', 'cnt_orders']
+    columns = ['id', 'executor_name', 'wallet_address', 'balance', 'score', 'cnt_orders', 'logs']
     dict_row = {}
     for row in rows:
         for index, column in enumerate(columns):
@@ -133,8 +148,11 @@ def get_order(customer_id: int): # Достатет данные заказа п
     cursor.execute(
         f"SELECT * FROM orders WHERE customer_id={customer_id} AND step<9")
     rows = cursor.fetchall()
-    columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 'key_name', 'roles', 
-    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 'waiting_group']
+    columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 
+    'key_name', 'roles', 'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 
+    'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 
+    'waiting_group', 'its_cust', 'info', 'custom_tanks', 'custom_heals', 'custom_dps', 'all_custom_executors', 
+    'message_stat']
     dict_row = {}
     for row in rows:
         for index, column in enumerate(columns):
@@ -146,8 +164,11 @@ def get_order_id(order_id: int): # Достает заказ по id заказ�
     cursor.execute(
         f"SELECT * FROM orders WHERE id={order_id}")
     rows = cursor.fetchall()
-    columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 'key_name', 'roles', 
-    'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 'waiting_group']
+    columns = ['id', 'customer_id', 'lvl_key', 'cnt_executors', 'cnt_fact_executors', 'fraction', 
+    'key_name', 'roles', 'cnt_roles', 'link', 'price', 'executors_id', 'step', 'message_order', 
+    'comission', 'room', 'comment', 'waiting_tanks', 'waiting_heals', 'waiting_dps', 'group_reg', 
+    'waiting_group', 'its_cust', 'info', 'custom_tanks', 'custom_heals', 'custom_dps', 'all_custom_executors',
+    'message_stat']
     dict_row = {}
     for row in rows:
         for index, column in enumerate(columns):
@@ -164,13 +185,22 @@ def active_orders_customer(customer_id: int): # Достает активные 
         for row in rows:
             order_id = str(row[0])
             key_name = row[6]
-            price = str(row[10])
-            if row[12] == 9:
-                step = 'в поиске исполнителя'
-            elif row[12] == 10:
-                step = 'выполняется'
-            order = f"№{order_id} - {key_name} | {price}₽ | {step}"
-            orders.append(order)
+            price = str(row[14])
+            info = str(row[23])
+            if row[22] == 0:
+                if row[12] == 9:
+                    step = 'в поиске исполнителя'
+                elif row[12] == 10:
+                    step = 'выполняется'
+                order = f"№{order_id} - {key_name} | {price}₽ | {step}"
+                orders.append(order)
+            elif row[22] == 1:
+                if row[12] == 9:
+                    step = 'в поиске исполнителя'
+                elif row[12] == 10:
+                    step = 'выполняется'
+                order = f"№{order_id} - {info} | {price}₽ | {step}"
+                orders.append(order)
         orders_history = '\n'.join(orders)
         return orders_history
     else:
@@ -184,26 +214,39 @@ def active_orders_executor(executors_id: int): # Достает активные
     rows = cursor.fetchall()
     orders = []
     if rows != []:
-        try:
-            for row in rows:
+        # try:
+        for row in rows:
+            print(row)
+            try:
                 executors_id_list = eval(row[11])
-                if executors_id in executors_id_list:
-                    order_id = str(row[0])
-                    key_name = row[6]
-                    price = str(row[10])
+            except:
+                executors_id_list = []
+            if executors_id in executors_id_list:
+                order_id = str(row[0])
+                key_name = row[6]
+                price = str(row[10])
+                info = str(row[23])
+                if row[22] == 0:
                     if row[12] == 9:
                         step = 'в поиске исполнитей'
                     elif row[12] == 10:
                         step = 'выполняется'
                     order = f"№{order_id} - {key_name} | {price}₽ | {step}"
                     orders.append(order)
-                else:
-                    pass
-            orders_history = '\n'.join(orders)
-            return orders_history
-        except:
-            orders = 'Нет активных заказов'
-            return orders
+                elif row[22] == 1:
+                    if row[12] == 9:
+                        step = 'в поиске исполнитей'
+                    elif row[12] == 10:
+                        step = 'выполняется'
+                    order = f"№{order_id} - {info} | {price}₽ | {step}"
+                    orders.append(order)
+            else:
+                pass
+        orders_history = '\n'.join(orders)
+        return orders_history
+        # except:
+        #     orders = 'Нет активных заказов'
+        #     return orders
     else:
         orders = 'Нет активных заказов'
         return orders
@@ -230,7 +273,8 @@ def history_customer(column, primary_id: int): # Возвращает строк
         key_name = row[6]
         price = int(row[10])
         comission = int(row[14])
-        all_sum = str(price + comission)
+        all_sum = str(comission)
+        info = str(row[23])
         if row[12] == 9:
             step = 'в поиске исполнителя'
         elif row[12] == 10:
@@ -239,8 +283,12 @@ def history_customer(column, primary_id: int): # Возвращает строк
             step = 'закончен, неоплачен'
         elif row[12] == 13:
             step = 'закончен, оплачен'
-        order = f"№{order_id} - {key_name} | {all_sum}₽ | {step}"
-        orders.append(order)
+        if row[22] == 0:
+            order = f"№{order_id} - {key_name} | {all_sum}₽ | {step}"
+            orders.append(order)
+        elif row[22] == 1:
+            order = f"№{order_id} - {info} | {all_sum}₽ | {step}"
+            orders.append(order)
     if orders != []:
         orders_history = '\n'.join(orders)
     else:
@@ -263,6 +311,7 @@ def history_executor(primary_id: int): # Возвращает строку с и
             order_id = str(row[0])
             key_name = row[6]
             price = str(row[10])
+            info = str(row[23])
             if row[12] == 9:
                 step = 'в поиске исполнителя'
             elif row[12] == 10:
@@ -271,8 +320,12 @@ def history_executor(primary_id: int): # Возвращает строку с и
                 step = 'закончен, неоплачен'
             elif row[12] == 13:
                 step = 'закончен, оплачен'
-            order = f"№{order_id} - {key_name} | {price}₽ | {step}"
-            orders.append(order)
+            if row[22] == 0:
+                order = f"№{order_id} - {key_name} | {price}₽ | {step}"
+                orders.append(order)
+            elif row[22] == 1:
+                order = f"№{order_id} - {info} | {price}₽ | {step}"
+                orders.append(order)
     if orders != []:
         orders_history = '\n'.join(orders)
     else:

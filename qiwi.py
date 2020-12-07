@@ -25,12 +25,13 @@ def send_p2p(to_qw, comment, sum_p2p, api_access_token):
     s.headers['authorization'] = 'Bearer ' + api_access_token
     s.headers['User-Agent'] = 'Android v3.2.0 MKT'
     s.headers['Accept'] = 'application/json'
-    postjson = {"id": "", "sum": {"amount": "", "currency": ""}, "paymentMethod": {"type": "Account", "accountId": "643"}, "comment": f"{comment}", "fields": {"account": ""}}
+    postjson = {"id": "", "sum": {"amount": "", "currency": ""}, "paymentMethod": {"type": "Account", "accountId": "643"}, "comment": "", "fields": {"account": ""}}
     postjson['id'] = str(int(time.time() * 1000))
     postjson['sum']['amount'] = sum_p2p
     postjson['sum']['currency'] = '643'
     postjson['fields']['account'] = to_qw
+    postjson['comment'] = str(comment)
     res = s.post('https://edge.qiwi.com/sinap/api/v2/terms/99/payments', json = postjson)
-    return res.json()
+    print(res.text)
 
 # print(send_p2p(api_access_token, '+79122658414', 'comment', 99.01))
