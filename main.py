@@ -246,7 +246,7 @@ async def pay(ctx, order_id=None):
 				print(wallet)
 				qiwi.send_p2p(wallet, str(order_id), int(order['price']), pay_token)
 				await asyncio.sleep(65)
-			qiwi.send_p2p('+79823637415', str(o_id), (int(order['comission']) - int(order['price'])), pay_token)
+			qiwi.send_p2p('номер получателя комиссии', str(o_id), (int(order['comission']) - int(order['price'])), pay_token)
 			room = bot.get_channel(order['room'])
 			await room.delete()
 		elif order_id == 'all':
@@ -277,7 +277,7 @@ async def pay(ctx, order_id=None):
 					price = order['price'] / order['cnt_executors']
 					qiwi.send_p2p(wallet, str(o_id), price, pay_token)
 					await asyncio.sleep(65)
-				qiwi.send_p2p('+79823637415', str(o_id), (int(order['comission']) - int(order['price'])), pay_token)
+				qiwi.send_p2p('+номер получателя комиссии', str(o_id), (int(order['comission']) - int(order['price'])), pay_token)
 				# room = bot.get_channel(order['room'])
 				# await room.delete()
 
