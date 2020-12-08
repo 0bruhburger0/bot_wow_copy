@@ -1,8 +1,8 @@
 import requests, time
 
 
-api_access_token = '2d8718d868cdd2ddb3027e3c5eae6cd2'
-mylogin = '79823637415'
+api_access_token = 'тут токен'
+mylogin = 'номер кошелька'
 
 
 ### Достает рублевый баланc ###
